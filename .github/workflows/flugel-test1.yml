@@ -39,8 +39,8 @@ jobs:
           go-version: 1.17
       
       - name: Build
-        working-directory: flugel-test-1
-        run: go build -v test
+        working-directory: flugel-test-1/test
+        run: go build -v
 
       - name: Init
         working-directory: flugel-test-1/test
