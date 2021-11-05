@@ -1,0 +1,45 @@
+name: flugel-test-1-tag-test 
+on:
+  push: 
+    branches: 
+      - develop
+      - master
+      - main
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '**.md'
+      
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '**.md'
+jobs:
+  go-tests:
+    name: Run Integration Tag-test
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: 'Checkout'
+        uses: actions/checkout@master
+
+      - name: Configure AWS Credentials
+        uses: clouddrove/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET_KEY }}
+          aws-region: us-east-2
+
+      - uses: actions/set-up-go@v1
+        with:
+          go-version: '1.16.6' # The Go version to download (if necessary) and use.
+      - run: |
+          cd .. && sudo go mod init pwd
+          cd test && sudo go mod tidy
+          sudo go mod tidy
+          sudo go test -v ./tags_test.go
+
+        
