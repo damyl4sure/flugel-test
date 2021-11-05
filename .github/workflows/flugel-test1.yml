@@ -1,7 +1,7 @@
 name: flugel-test-1-tag-test 
 on:
   push: 
-    branches: 
+    branches:
       - develop
       - master
       - main
@@ -33,13 +33,29 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET_KEY }}
           aws-region: us-east-2
 
-      - uses: actions/set-up-go@v1
+      - name: Set up Go
+        uses: actions/setup-go@v2
         with:
-          go-version: '1.16.6' # The Go version to download (if necessary) and use.
-      - run: |
-          cd .. && sudo go mod init pwd
-          cd test && sudo go mod tidy
-          sudo go mod tidy
-          sudo go test -v ./tags_test.go
+          go-version: 1.17
+      
+      - name: Build
+        working-directory: /flugel-test-1
+        run: go build -v ./...
 
+      - name: Init
+        working-directory: /flugel-test-1/test
+        run: go build -v ./...
         
+      - name: Test
+        working-directory: /flugel-test-1/test
+        run: go test -v ./...
+
+
+      # - uses: actions/set-up-go@v1
+      #   with:
+      #     go-version: '1.16.6' # The Go version to download (if necessary) and use.
+      # - run: |
+      #     cd .. && sudo go mod init pwd
+      #     cd test && sudo go mod tidy
+      #     sudo go mod tidy
+      #     sudo go test -v ./tags_test.go
