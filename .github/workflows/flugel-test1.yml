@@ -44,11 +44,20 @@ jobs:
 
       - name: Init
         working-directory: /flugel-test-1/test
-        run: go build -v ./...
+        run: go mod init -v
+      
+      - name: Tidy
+        working-directory: /flugel-test-1
+        run: go mod tidy
+
         
-      - name: Test
+      - name: Test Ec2
         working-directory: /flugel-test-1/test
-        run: go test -v ./...
+        run: go test -v ./ec2_tag_test.go
+      
+      - name: Test s3 Bucket
+        working-directory: /flugel-test-1/test
+        run: go test -v ./s3_tag_test.go
 
 
       # - uses: actions/set-up-go@v1
