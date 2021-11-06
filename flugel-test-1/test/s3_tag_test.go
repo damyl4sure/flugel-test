@@ -1,17 +1,64 @@
-// https://sourcegraph.com/github.com/gruntwork-io/terratest/-/blob/modules/aws/s3.go?L13
-
 package aws
 
 import (
-	"github.com/gruntwork-io/terratest/modules/testing"
-	"github.com/stretchr/testify/require"
+	"strings"
+	"testing"
+
+	//"github.com/aws/aws-sdk-go/aws"
+
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/gruntwork-io/terratest/modules/aws"
+	"github.com/gruntwork-io/terratest/modules/logger"
+	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/stretchr/testify/assert"
 )
 
-// FindS3BucketWithTag finds the name of the S3 bucket in the given region with the given tag key=value.
-func FindS3BucketWithTag(t testing.TestingT, awsRegion string, key string, value string) string {
-	bucket, err := FindS3BucketWithTagE(t, awsRegion, key, value)
-	require.NoError(t, err)
+func TestGetS3BucketTags(t *testing.T) {
+	t.Parallel()
+	// Pre-defined values
+	//bucket := "MyBucket"
+	var tagName1 string = "Name"
+	var tagValue1 string = "Flugel"
+	var tagName2 string = "Owner"
+	var tagValue2 string = "InfraTeam"
+	// Make a copy of the terraform module to a temporary directory. This allows running multiple tests in parallel
+	// against the same terraform module.
+	// exampleFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "../")
 
-	return bucket
+	region := aws.GetRandomStableRegion(t, nil, nil)
+	id := random.UniqueId()
+	logger.Logf(t, "Random values selected. Region = %s, Id = %s\n", region, id)
+	s3BucketName := "gruntwork-terratest-" + strings.ToLower(id)
 
+	// CreateS3Bucket(t, region, s3BucketName)
+	// defer DeleteS3Bucket(t, region, s3BucketName)
+
+	s3Client, err := aws.NewS3ClientE(t, region)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s3Client.PutBucketTagging(&s3.PutBucketTaggingInput{
+		Bucket: &s3BucketName,
+		Tagging: &s3.Tagging{
+			TagSet: []*s3.Tag{
+				{
+					Key:   aws.String("Key1"),
+					Value: aws.string("Value1"),
+				},
+				{
+					Key:   aws.string("Key2"),
+					Value: aws.string("Value2"),
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	actualTags := aws.GetS3BucketTags(t, region, s3BucketName)
+	assert.True(t, actualTags["Key1"] == "Value1")
+	assert.True(t, actualTags["Key2"] == "Value2")
+	assert.True(t, actualTags["NonExistentKey"] == "")
 }

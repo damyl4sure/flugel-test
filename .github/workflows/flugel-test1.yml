@@ -38,33 +38,20 @@ jobs:
         with:
           go-version: 1.17
       
-      - name: Build
-        working-directory: flugel-test-1/test
-        run: go build -v
-
       - name: Init
         working-directory: flugel-test-1/test
-        run: go mod init -v
+        run: |
+          cd .. && go mod init pwd 
       
       - name: Tidy
         working-directory: flugel-test-1
-        run: go mod tidy
-
+        run: |
+          cd test && go mod tidy
         
       - name: Test Ec2
         working-directory: flugel-test-1/test
         run: go test -v ./ec2_tag_test.go
       
-      - name: Test s3 Bucket
-        working-directory: flugel-test-1/test
-        run: go test -v ./s3_tag_test.go
-
-
-      # - uses: actions/set-up-go@v1
-      #   with:
-      #     go-version: '1.16.6' # The Go version to download (if necessary) and use.
-      # - run: |
-      #     cd .. && sudo go mod init pwd
-      #     cd test && sudo go mod tidy
-      #     sudo go mod tidy
-      #     sudo go test -v ./tags_test.go
+      # - name: Test s3 Bucket
+      #   working-directory: flugel-test-1/test
+      #   run: go test -v ./s3_tag_test.go
