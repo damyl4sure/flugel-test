@@ -15,9 +15,9 @@ terraform.tfvars
 *.so
 *.dylib
 *.mod
-flugel-test-1/*.mod
+flugel-test/flugel-test-1/*.mod
 *.sum
-flugel-test-1/*.sum
+flugel-test/flugel-test-1/*.sum
 
 # Test binary, built with `go test -c`
 *.test
