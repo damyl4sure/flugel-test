@@ -38,10 +38,10 @@ jobs:
         with:
           go-version: 1.17
       
-      - name: Init
-        working-directory: flugel-test-1/test
-        run: |
-          cd .. && go mod init pwd 
+      # - name: Init
+      #   working-directory: flugel-test-1/test
+      #   run: |
+      #     cd .. && go mod init pwd 
       
       - name: Tidy
         working-directory: flugel-test-1
